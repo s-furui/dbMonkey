@@ -9,30 +9,40 @@ namespace dbMonkey {
 	public ref class Record {
 	private:
 		Dbc * _cursorp;
-		const String^ _key;
-		const String^ _data;
+		String^ _key;
+		String^ _data;
+		bool _cached;
 
-		String^ dbt2string(const Dbt &dbt) {
+		String^ dbt2string(Dbt &dbt) {
 			return marshal_as<String^>(
 				string(static_cast<char *>(dbt.get_data()), dbt.get_size()));
+		}
+
+		void fetch() {
+			Dbt key, data;
+			_cursorp->get(&key, &data, DB_CURRENT);
+			_key = dbt2string(key);
+			_data = dbt2string(data);
+			_cached = true;
 		}
 	public:
 		Record(Dbc *cursorp) {
 			_cursorp = cursorp;
-			Dbt key, data;
-			cursorp->get(&key, &data, DB_CURRENT);
-			_key = dbt2string(key);
-			_data = dbt2string(data);
+			_cached = false;
 		}
 
-		property const String^ Key {
-			const String^ get() {
+		property String^ Key {
+			String^ get() {
+				if (!_cached)
+					fetch();
 				return _key;
 			}
 		}
 
-		property const String^ Data {
-			const String^ get() {
+		property String^ Data {
+			String^ get() {
+				if (!_cached)
+					fetch();
 				return _data;
 			}
 		}

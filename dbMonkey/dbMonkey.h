@@ -1,5 +1,7 @@
 #pragma once
 
+#include <db_cxx.h>
+
 namespace dbMonkey {
 
 	using namespace System;
@@ -21,23 +23,19 @@ namespace dbMonkey {
 		/// <summary>
 		/// 使用中のリソースをすべてクリーンアップします。
 		/// </summary>
-		~dbMonkey()
-		{
-			if (components)
-			{
-				delete components;
-			}
-		}
+		~dbMonkey();
 	private: System::Windows::Forms::DataGridView^  dataGridView1;
-
-
 	private: System::Windows::Forms::BindingSource^  bindingSource1;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Key;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Data;
 
 
 
 	private: System::ComponentModel::IContainer^  components;
+	private: Db *db;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Key;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Data;
+
+
+	private: Dbc *cursorp;
 	protected:
 
 	private:
@@ -79,12 +77,14 @@ namespace dbMonkey {
 			// Key
 			// 
 			this->Key->DataPropertyName = L"Key";
+			this->Key->FillWeight = 20;
 			this->Key->HeaderText = L"Key";
 			this->Key->Name = L"Key";
 			// 
 			// Data
 			// 
 			this->Data->DataPropertyName = L"Data";
+			this->Data->FillWeight = 80;
 			this->Data->HeaderText = L"Data";
 			this->Data->Name = L"Data";
 			// 
